@@ -1,2 +1,4 @@
 django
 django_rest_framework
+djangorestframework-simplejwt 
+djoser
