@@ -7,10 +7,25 @@ from todo_api.models import Todo
 from .serializers import TodoSerializer
 from todo_api.serializers import TodoSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from permissions import IsOwner
+from todo_api.permissions import IsOwner
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
-
+@extend_schema_view(
+    get=extend_schema(
+        summary="List all todos",
+        description="List all the todo items for the given requested user",
+        responses={200: TodoSerializer(many=True)},
+        auth=[{'JWT': []}]
+    ),
+    post=extend_schema(
+        summary="Create a new todo",
+        description="Create a new todo item with the given data",
+        request=TodoSerializer,
+        responses={201: TodoSerializer},
+        auth=[{'JWT': []}]
+    )
+)
 class TodoListApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [IsAuthenticated]
@@ -22,7 +37,7 @@ class TodoListApiView(APIView):
         '''
         List all the todo items for given requested user
         '''
-        todos = Todo.objects.filter(user = request.user.id)
+        todos = Todo.objects.filter(user=request.user.id)
         serializer = TodoSerializer(todos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -32,8 +47,8 @@ class TodoListApiView(APIView):
         Create the Todo with given todo data
         '''
         data = {
-            'task': request.data.get('task'), 
-            'completed': request.data.get('completed'), 
+            'task': request.data.get('task'),
+            'completed': request.data.get('completed'),
             'user': request.user.id
         }
         serializer = TodoSerializer(data=data)
@@ -42,10 +57,29 @@ class TodoListApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
-
+@extend_schema_view(
+    get=extend_schema(
+        summary="Retrieve a todo",
+        description="Retrieve the todo item with the given ID",
+        responses={200: TodoSerializer},
+        auth=[{'JWT': []}]
+    ),
+    put=extend_schema(
+        summary="Update a todo",
+        description="Update the todo item with the given ID",
+        request=TodoSerializer,
+        responses={200: TodoSerializer},
+        auth=[{'JWT': []}]
+    ),
+    delete=extend_schema(
+        summary="Delete a todo",
+        description="Delete the todo item with the given ID",
+        responses={200: None},
+        auth=[{'JWT': []}]
+    )
+)
 class TodoDetailApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [IsAuthenticated]
@@ -57,7 +91,7 @@ class TodoDetailApiView(APIView):
         Helper method to get the object with given todo_id, and user_id
         '''
         try:
-            return Todo.objects.get(id=todo_id, user = user_id)
+            return Todo.objects.get(id=todo_id, user=user_id)
         except Todo.DoesNotExist:
             return None
 
@@ -84,15 +118,15 @@ class TodoDetailApiView(APIView):
         todo_instance = self.get_object(todo_id, request.user.id)
         if not todo_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": "Object with todo id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         data = {
-            'task': request.data.get('task'), 
-            'completed': request.data.get('completed'), 
+            'task': request.data.get('task'),
+            'completed': request.data.get('completed'),
             'user': request.user.id
         }
-        serializer = TodoSerializer(instance = todo_instance, data=data, partial = True)
+        serializer = TodoSerializer(instance=todo_instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -106,7 +140,7 @@ class TodoDetailApiView(APIView):
         todo_instance = self.get_object(todo_id, request.user.id)
         if not todo_instance:
             return Response(
-                {"res": "Object with todo id does not exists"}, 
+                {"res": "Object with todo id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         todo_instance.delete()

@@ -17,7 +17,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':(
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -37,7 +37,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'todo_api',
     'djoser',
+    'drf_spectacular',
+    #'drf_spectacular_sidecar',
 ]
+
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API Documentation TOdoList',
+    'DESCRIPTION': '''
+        This is a simple API
+        for creating and managing Todo items.''',
+    'VERSION': 'v1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
