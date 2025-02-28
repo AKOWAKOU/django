@@ -2,10 +2,10 @@
 
 from pathlib import Path 
 from datetime import timedelta
-
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-1x=@n21r2mpl@nheagd%eb8bt&c6+jed1(jp30tq&7batqr=_9'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
 

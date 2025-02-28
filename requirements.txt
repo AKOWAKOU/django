@@ -3,3 +3,5 @@ django_rest_framework
 djangorestframework-simplejwt 
 djoser
 drf_spectacular
+bandit
+python-dotenv
